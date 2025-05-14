@@ -1,0 +1,58 @@
+﻿@page "/textAnalyzer"
+@using System.Text
+@using BozaniBlazor.Common.Extensions
+@using BozaniBlazor.TextAnalyzers
+@rendermode InteractiveServer
+
+<PageTitle>Text Analyzer</PageTitle>
+
+<h1>TextAnalyzer</h1>
+
+<textarea style="width:100%; height:200px;" @bind="text"></textarea>
+
+<button class="btn btn-primary" @onclick="Analyze">Analyze Text</button>
+
+Check for occurence: <textarea rows="1" cols="20" @bind="occurence"></textarea>
+
+<table style="max-width: 100vw" class="table">
+    <thead>
+    <tr>
+        <th >Header</th>
+        <th >Data</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var result in results)
+    {
+        <tr>
+            <td>@result.Header</td>
+            <td>@result.Data</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+@code {
+    private string text = "";
+    private string occurence = "";
+    private List<TextAnalysisResult> results = [];
+
+	private void Analyze()
+    {
+        var analyzers = new TextAnalyzersFactory().Create();
+        if(occurence.Length > 0)
+            analyzers.Add(new FindWordsTextAnalyzer(occurence));
+
+        foreach (var item in text.RemoveSpecialCharModifiers())
+        {
+            foreach (var textAnalyzer in analyzers)
+            {
+                textAnalyzer.Process(item);
+            }
+        }
+
+        results = analyzers.Select(x => x.GetResult()).ToList();
+    }
+
+}

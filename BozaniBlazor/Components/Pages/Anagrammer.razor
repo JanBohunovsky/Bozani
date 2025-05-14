@@ -1,0 +1,87 @@
+﻿@page "/anagrammer"
+@rendermode InteractiveServer
+
+<PageTitle>Anagrammer</PageTitle>
+
+<h1>Anagrammer</h1>
+
+Chars: <textarea rows="1" cols="20" @bind="letters"></textarea><br>
+
+Unknown Chars: <input type="number" @bind="numberOfUnknownChars" min="0" max="10" step="1" class="form-control" />
+<br>
+Number Of Words: <input type="number" disabled @bind="numberOfWords" min="1" max="3" step="1" class="form-control" />
+
+<button class="btn btn-primary" @onclick="Find">Find</button>
+
+<table style="max-width: 100vw" class="table">
+    <thead>
+        <tr>
+            <th>Words</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in words)
+        {
+            <tr>
+                <td>@result</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private string letters = "";
+    private List<string> words = [];
+    private int numberOfUnknownChars = 0; // Default value
+    private int numberOfWords = 1; // Default value
+
+	private void Find()
+    {
+        var foundWords = new HashSet<string>();
+        if (letters.Length <= 0 && numberOfUnknownChars == 0)
+            return;
+
+        var dict = new Dictionary<char, int>();
+        foreach (var letter in letters)
+        {
+            dict.TryAdd(letter, 0);
+            dict[letter]++;
+        }
+
+        foreach (var word in GetWord())
+        {
+            if (word.Length != letters.Length + numberOfUnknownChars)
+                continue;
+
+            var ok = true;
+            foreach (var i in dict)
+            {
+                if (i.Value != word.Count(x => x == i.Key))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok)
+                foundWords.Add(word);
+        }
+
+        words = foundWords.OrderBy(x => x).ToList();
+    }
+
+    private IEnumerable<string> GetWord()
+    {
+        var path = Path.Combine(Environment.CurrentDirectory, "wwwroot", "data", "vsechnaSlovaBezDiakritiky.txt");
+        if (File.Exists(path))
+        {
+            using StreamReader reader = new StreamReader(path);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                yield return line;
+            }
+        }
+    }
+
+}
