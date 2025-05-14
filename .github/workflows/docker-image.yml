@@ -40,10 +40,7 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
-          type=raw,value=$(date +%s)
-          type=sha
-          type=ref,event=branch
-          type=ref,event=pr
+          type=raw,value={{date 'YYYYMMDD-HHmmss' tz='Europe/Prague'}}
           type=semver,pattern=v{{version}}
           type=semver,pattern=v{{major}}.{{minor}}
 
