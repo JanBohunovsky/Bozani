@@ -34,6 +34,18 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Extract metadata for Docker
+      id: meta
+      uses: docker/metadata-action@v5.7.0
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=sha
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+
     - name: Build and push Docker image
       id: push
       uses: docker/build-push-action@v6.16.0
@@ -41,7 +53,8 @@ jobs:
         context: .
         file: BozaniBlazor/Dockerfile
         push: true
-        tags: bozani-web:$(date +%s)
+        tags: ${{ steps.meta.output.tags }}
+        labels: ${{ steps.meta.output.labels }}
 
     - name: Generate artifact attestation
       uses: actions/attest-build-provenance@v2
