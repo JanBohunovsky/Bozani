@@ -1,0 +1,38 @@
+﻿@using BozaniBlazor.Common
+<div class="alert alert-@GetAlertType() d-flex align-items-center)" role="alert">
+	<span class="bi bi-@GetIconName() me-2 align-self-start"></span>
+	<div>@Text</div>
+</div>
+
+@code {
+
+	[Parameter, EditorRequired]
+    public required string Text { get; set; }
+
+	[Parameter]
+	public Severity Severity { get; set; } = Severity.Information;
+
+	private string GetAlertType()
+	{
+		return Severity switch
+		{
+			Severity.Information => "primary",
+			Severity.Success => "success",
+			Severity.Warning => "warning",
+			Severity.Danger => "danger",
+			_ => ""
+		};
+	}
+
+	private string GetIconName()
+	{
+		return Severity switch
+		{
+			Severity.Information => "info-circle-fill",
+			Severity.Success => "check-circle-fill",
+			Severity.Warning => "exclamation-triangle-fill",
+			Severity.Danger => "exclamation-octagon-fill",
+			_ => ""
+		};
+	}
+}

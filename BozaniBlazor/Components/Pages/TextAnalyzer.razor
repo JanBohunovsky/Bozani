@@ -1,36 +1,41 @@
 ﻿@page "/textAnalyzer"
-@using System.Text
 @using BozaniBlazor.Common.Extensions
 @using BozaniBlazor.TextAnalyzers
 @rendermode InteractiveServer
 
-<PageTitle>Text Analyzer</PageTitle>
+<PageTitle>Text Analyzer - Božani!!!</PageTitle>
 
-<h1>TextAnalyzer</h1>
+<h1>Text Analyzer</h1>
 
-<textarea style="width:100%; height:200px;" @bind="text"></textarea>
+<div class="d-flex flex-column gap-3">
+    <textarea class="form-control" rows="5" @bind="text"></textarea>
 
-<button class="btn btn-primary" @onclick="Analyze">Analyze Text</button>
+    <div class="d-flex flex-column flex-md-row align-items-md-center gap-md-1">
+        <label for="occurence">Check for occurence:</label>
+        <input type="text" id="occurence" class="form-control w-auto" @bind="occurence"/>
+    </div>
 
-Check for occurence: <textarea rows="1" cols="20" @bind="occurence"></textarea>
+    <button class="btn btn-primary align-self-md-start" @onclick="Analyze">Analyze Text</button>
 
-<table style="max-width: 100vw" class="table">
-    <thead>
-    <tr>
-        <th >Header</th>
-        <th >Data</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var result in results)
-    {
+    <table style="max-width: 100vw" class="table">
+        <thead>
         <tr>
-            <td>@result.Header</td>
-            <td>@result.Data</td>
+            <th >Header</th>
+            <th >Data</th>
         </tr>
-    }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        @foreach (var result in results)
+        {
+            <tr>
+                <td>@result.Header</td>
+                <td>@result.Data</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
 
 
 @code {
